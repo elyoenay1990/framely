@@ -142,7 +142,7 @@
       text-transform: uppercase;
       margin-bottom: 8px;
     }
-    .hero-badge::before { content: 'â¦'; font-size: 0.7rem; }
+    .hero-badge::before { content: 'Ã¢ÂÂ¦'; font-size: 0.7rem; }
     .hero-logo {
       font-family: 'Playfair Display', serif;
       font-size: clamp(4rem, 12vw, 9rem);
@@ -931,19 +931,134 @@
       animation: pulse 1.5s ease-in-out infinite;
     }
     @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
-  </style>
+  
+    /* âââ AUTH NAVBAR ADDITIONS âââââââââââââââââââââââââ */
+    .nav-auth-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-login {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: 0.5px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-login:hover { background: rgba(245,166,35,0.12); box-shadow: 0 0 16px rgba(245,166,35,0.3); }
+    .btn-register {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #0A0A0F;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: 0.5px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-register:hover { box-shadow: 0 0 20px rgba(245,166,35,0.5); transform: translateY(-1px); }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #0A0A0F;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-email {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btn-logout {
+      background: rgba(245,166,35,0.08);
+      border: 1px solid rgba(245,166,35,0.25);
+      color: var(--gold);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: 0.3px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-logout:hover { background: rgba(245,166,35,0.18); }
+
+    /* âââ AUTH GATE (hero prompt) âââââââââââââââââââââââ */
+    #auth-gate {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 40px;
+      text-align: center;
+      background: rgba(26,10,46,0.5);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    #auth-gate .gate-icon { font-size: 3rem; margin-bottom: 20px; }
+    #auth-gate h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--text-primary); margin-bottom: 12px; }
+    #auth-gate p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 32px; }
+    #auth-gate .gate-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    #auth-gate .gate-login { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 12px 28px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: all var(--transition); font-family: 'Inter', sans-serif; }
+    #auth-gate .gate-login:hover { background: rgba(245,166,35,0.12); }
+    #auth-gate .gate-register { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #0A0A0F; border: none; padding: 12px 28px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all var(--transition); font-family: 'Inter', sans-serif; }
+    #auth-gate .gate-register:hover { box-shadow: 0 0 24px rgba(245,166,35,0.5); transform: translateY(-1px); }
+</style>
+  <!-- Auth0 SPA SDK -->
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 </head>
 <body>
 
 <!-- NAV -->
 <nav id="navbar">
   <a href="#hero" class="nav-logo">FRAMELY</a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links-list">
     <li><a href="#create">Crear</a></li>
     <li><a href="#history">Mis Historias</a></li>
     <li><a href="#music">MÃºsica</a></li>
   </ul>
-  <button class="nav-cta" onclick="document.getElementById('create').scrollIntoView({behavior:'smooth'})">Empezar â¦</button>
+  <div class="nav-auth-area" id="nav-auth-area">
+    <!-- Logged out state -->
+    <div id="nav-logged-out" style="display:flex;gap:10px;align-items:center;">
+      <button class="btn-login" onclick="auth0Login()">Iniciar sesiÃ³n</button>
+      <button class="btn-register" onclick="auth0Register()">Registrarse</button>
+    </div>
+    <!-- Logged in state (hidden by default) -->
+    <div id="nav-logged-in" style="display:none;align-items:center;gap:12px;" class="user-info">
+      <div class="user-avatar" id="nav-avatar">?</div>
+      <span class="user-email" id="nav-email"></span>
+      <button class="btn-logout" onclick="auth0Logout()">Cerrar sesiÃ³n</button>
+    </div>
+  </div>
   <div class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()">
     <span></span><span></span><span></span>
   </div>
@@ -954,7 +1069,7 @@
   <ul>
     <li><a href="#create" onclick="closeMobileNav()">Crear</a></li>
     <li><a href="#history" onclick="closeMobileNav()">Mis Historias</a></li>
-    <li><a href="#music" onclick="closeMobileNav()">MÃºsica</a></li>
+    <li><a href="#music" onclick="closeMobileNav()">MÃÂºsica</a></li>
   </ul>
 </div>
 
@@ -974,12 +1089,24 @@
     <div class="hero-badge">AI-Powered Cinema</div>
     <h1 class="hero-logo">FRAMELY</h1>
     <p class="hero-tagline">Turn your story into cinema</p>
-    <p class="hero-sub">Convierte tus ideas en experiencias cinematogrÃ¡ficas Ãºnicas con el poder de la inteligencia artificial.</p>
+    <p class="hero-sub">Convierte tus ideas en experiencias cinematogrÃÂ¡ficas ÃÂºnicas con el poder de la inteligencia artificial.</p>
     <div class="hero-actions">
-      <a href="#create" class="btn-primary">â¦ Comenzar Ahora</a>
-      <a href="#history" class="btn-ghost">â¶ Ver Historias</a>
+      <a href="#create" class="btn-primary">Ã¢ÂÂ¦ Comenzar Ahora</a>
+      <a href="#history" class="btn-ghost">Ã¢ÂÂ¶ Ver Historias</a>
     </div>
   </div>
+
+  <!-- AUTH GATE - shown when logged out -->
+  <div id="auth-gate">
+    <div class="gate-icon">ð¬</div>
+    <h2>Bienvenido a Framely</h2>
+    <p>Inicia sesiÃ³n o regÃ­strate para acceder al generador de historias cinematogrÃ¡ficas, tu historial personalizado y mucho mÃ¡s.</p>
+    <div class="gate-buttons">
+      <button class="gate-login" onclick="auth0Login()">Iniciar sesiÃ³n</button>
+      <button class="gate-register" onclick="auth0Register()">Registrarse</button>
+    </div>
+  </div>
+
   <a href="#create" class="scroll-indicator">
     <span>Descubrir</span>
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -988,6 +1115,7 @@
   </a>
 </section>
 
+<div id="app-sections" style="display:none;">
 <div class="section-divider"></div>
 
 <!-- CREATE SECTION -->
@@ -1003,24 +1131,24 @@
             <div class="form-group">
               <label for="lang">Idioma <span class="required">*</span></label>
               <select id="lang" name="language">
-                <option value="es">ðªð¸ EspaÃ±ol (ES)</option>
-                <option value="en">ð¬ð§ English (EN)</option>
-                <option value="fr">ð«ð· FranÃ§ais (FR)</option>
-                <option value="de">ð©ðª Deutsch (DE)</option>
-                <option value="it">ð®ð¹ Italiano (IT)</option>
-                <option value="pt">ðµð¹ PortuguÃªs (PT)</option>
+                <option value="es">Ã°ÂÂÂªÃ°ÂÂÂ¸ EspaÃÂ±ol (ES)</option>
+                <option value="en">Ã°ÂÂÂ¬Ã°ÂÂÂ§ English (EN)</option>
+                <option value="fr">Ã°ÂÂÂ«Ã°ÂÂÂ· FranÃÂ§ais (FR)</option>
+                <option value="de">Ã°ÂÂÂ©Ã°ÂÂÂª Deutsch (DE)</option>
+                <option value="it">Ã°ÂÂÂ®Ã°ÂÂÂ¹ Italiano (IT)</option>
+                <option value="pt">Ã°ÂÂÂµÃ°ÂÂÂ¹ PortuguÃÂªs (PT)</option>
               </select>
             </div>
 
             <!-- Tematica -->
             <div class="form-group">
-              <label for="tematica">TemÃ¡tica <span class="required">*</span></label>
-              <input type="text" id="tematica" name="tematica" placeholder="Ej: Ciencia ficciÃ³n, Romance, Terror..." maxlength="100">
+              <label for="tematica">TemÃÂ¡tica <span class="required">*</span></label>
+              <input type="text" id="tematica" name="tematica" placeholder="Ej: Ciencia ficciÃÂ³n, Romance, Terror..." maxlength="100">
             </div>
 
             <!-- Personaje -->
             <div class="form-group full">
-              <label for="personaje">DescripciÃ³n del Personaje <span class="required">*</span></label>
+              <label for="personaje">DescripciÃÂ³n del Personaje <span class="required">*</span></label>
               <textarea id="personaje" name="descripcion_personaje" placeholder="Describe tu personaje principal..."></textarea>
             </div>
 
@@ -1032,17 +1160,17 @@
 
             <!-- Ambientacion -->
             <div class="form-group full">
-              <label for="ambientacion">AmbientaciÃ³n <span style="font-size:0.7rem;opacity:0.5">(opcional)</span></label>
-              <textarea id="ambientacion" name="ambientacion" placeholder="Describe el ambiente, Ã©poca, lugar... (opcional)"></textarea>
+              <label for="ambientacion">AmbientaciÃÂ³n <span style="font-size:0.7rem;opacity:0.5">(opcional)</span></label>
+              <textarea id="ambientacion" name="ambientacion" placeholder="Describe el ambiente, ÃÂ©poca, lugar... (opcional)"></textarea>
             </div>
 
             <!-- Images -->
             <div class="form-group full">
-              <label>ImÃ¡genes de Referencia <span style="font-size:0.7rem;opacity:0.5">(mÃ¡x. 3)</span></label>
+              <label>ImÃÂ¡genes de Referencia <span style="font-size:0.7rem;opacity:0.5">(mÃÂ¡x. 3)</span></label>
               <div class="drop-zone" id="drop-zone">
-                <div class="drop-zone-icon">ðï¸</div>
-                <p>Arrastra imÃ¡genes aquÃ­ o <span>haz clic para seleccionar</span></p>
-                <p style="font-size:0.75rem;margin-top:6px;opacity:0.5">JPG, PNG, WEBP Â· MÃ¡ximo 3 imÃ¡genes</p>
+                <div class="drop-zone-icon">Ã°ÂÂÂÃ¯Â¸Â</div>
+                <p>Arrastra imÃÂ¡genes aquÃÂ­ o <span>haz clic para seleccionar</span></p>
+                <p style="font-size:0.75rem;margin-top:6px;opacity:0.5">JPG, PNG, WEBP ÃÂ· MÃÂ¡ximo 3 imÃÂ¡genes</p>
                 <input type="file" id="img-input" accept="image/*" multiple>
               </div>
               <div class="image-previews" id="image-previews"></div>
@@ -1050,80 +1178,77 @@
 
             <!-- Duration Tiers -->
             <div class="form-group full">
-              <label>DuraciÃ³n / Plan <span class="required">*</span></label>
+              <label>DuraciÃÂ³n / Plan <span class="required">*</span></label>
               <div class="tier-grid" id="tier-grid">
                 <label class="tier-card" data-tier="demo">
                   <input type="radio" name="tier" value="demo" data-price="0">
                   <span class="tier-badge">FREE</span>
-                  <span class="tier-icon">â¶</span>
+                  <span class="tier-icon">Ã¢ÂÂ¶</span>
                   <span class="tier-name">Demo</span>
                   <span class="tier-price">Gratis</span>
                 </label>
                 <label class="tier-card" data-tier="teaser">
                   <input type="radio" name="tier" value="teaser" data-price="2.99">
-                  <span class="tier-icon">ðï¸</span>
+                  <span class="tier-icon">Ã°ÂÂÂÃ¯Â¸Â</span>
                   <span class="tier-name">Teaser</span>
-                  <span class="tier-price">2.99â¬</span>
+                  <span class="tier-price">2.99Ã¢ÂÂ¬</span>
                 </label>
                 <label class="tier-card" data-tier="corto">
                   <input type="radio" name="tier" value="corto" data-price="4.99">
-                  <span class="tier-icon">ð¬</span>
+                  <span class="tier-icon">Ã°ÂÂÂ¬</span>
                   <span class="tier-name">Corto</span>
-                  <span class="tier-price">4.99â¬</span>
+                  <span class="tier-price">4.99Ã¢ÂÂ¬</span>
                 </label>
                 <label class="tier-card" data-tier="historia">
                   <input type="radio" name="tier" value="historia" data-price="7.99">
-                  <span class="tier-icon">ð</span>
+                  <span class="tier-icon">Ã°ÂÂÂ</span>
                   <span class="tier-name">Historia</span>
-                  <span class="tier-price">7.99â¬</span>
+                  <span class="tier-price">7.99Ã¢ÂÂ¬</span>
                 </label>
                 <label class="tier-card" data-tier="epico">
                   <input type="radio" name="tier" value="epico" data-price="12.99">
-                  <span class="tier-icon">â­</span>
-                  <span class="tier-name">Ãpico</span>
-                  <span class="tier-price">12.99â¬</span>
+                  <span class="tier-icon">Ã¢Â­Â</span>
+                  <span class="tier-name">ÃÂpico</span>
+                  <span class="tier-price">12.99Ã¢ÂÂ¬</span>
                 </label>
               </div>
             </div>
 
             <!-- Channels -->
             <div class="form-group full">
-              <label>DistribuciÃ³n <span style="font-size:0.7rem;opacity:0.5">(selecciona los canales)</span></label>
+              <label>DistribuciÃÂ³n <span style="font-size:0.7rem;opacity:0.5">(selecciona los canales)</span></label>
               <div class="channel-grid" id="channel-grid">
                 <label class="channel-chip" data-channel="tiktok">
                   <input type="checkbox" name="channels" value="tiktok">
-                  <span class="channel-icon">ðµ</span> TikTok
+                  <span class="channel-icon">Ã°ÂÂÂµ</span> TikTok
                 </label>
                 <label class="channel-chip" data-channel="youtube">
                   <input type="checkbox" name="channels" value="youtube">
-                  <span class="channel-icon">â¶ï¸</span> YouTube
+                  <span class="channel-icon">Ã¢ÂÂ¶Ã¯Â¸Â</span> YouTube
                 </label>
                 <label class="channel-chip" data-channel="email">
                   <input type="checkbox" name="channels" value="email">
-                  <span class="channel-icon">âï¸</span> Email
+                  <span class="channel-icon">Ã¢ÂÂÃ¯Â¸Â</span> Email
                 </label>
                 <label class="channel-chip" data-channel="gdrive">
                   <input type="checkbox" name="channels" value="gdrive">
-                  <span class="channel-icon">âï¸</span> Google Drive
+                  <span class="channel-icon">Ã¢ÂÂÃ¯Â¸Â</span> Google Drive
                 </label>
                 <label class="channel-chip" data-channel="descarga">
                   <input type="checkbox" name="channels" value="descarga">
-                  <span class="channel-icon">ð¾</span> Descarga directa
+                  <span class="channel-icon">Ã°ÂÂÂ¾</span> Descarga directa
                 </label>
               </div>
             </div>
 
-            <!-- User ID -->
-            <div class="form-group full">
-              <label for="user-id">Tu Identificador <span class="required">*</span></label>
-              <input type="text" id="user-id" name="user_identifier" placeholder="Tu nombre o email para identificarte">
-            </div>
+            <!-- User ID (hidden - auto-filled from Auth0) -->
+            <input type="hidden" id="user-id" name="user_identifier" value="">
 
           </div><!-- /form-grid -->
 
           <button type="submit" class="btn-submit" id="submit-btn">
             <div class="spinner" id="submit-spinner"></div>
-            <span id="submit-text">â¦ Crear Historia CinematogrÃ¡fica</span>
+            <span id="submit-text">Ã¢ÂÂ¦ Crear Historia CinematogrÃÂ¡fica</span>
           </button>
         </form>
       </div>
@@ -1138,10 +1263,11 @@
   <section id="history">
     <div class="fade-in">
       <h2 class="section-title">Mis Historias</h2>
-      <div class="mock-note">â¹ï¸ Conecta tu HISTORY_API_URL para cargar tus historias reales. Mostrando datos de ejemplo.</div>
-      <div class="history-search">
+      <div class="mock-note">Ã¢ÂÂ¹Ã¯Â¸Â Conecta tu HISTORY_API_URL para cargar tus historias reales. Mostrando datos de ejemplo.</div>
+      <!-- History search hidden - auto-filtered by logged-in user email -->
+      <div class="history-search" style="display:none;">
         <input type="text" id="history-search-input" placeholder="Tu nombre o email...">
-        <button class="btn-search" onclick="searchHistory()">ð Buscar</button>
+        <button class="btn-search" onclick="searchHistory()">&#128269; Buscar</button>
       </div>
       <div class="history-scroll-wrapper">
         <div class="history-grid" id="history-grid"></div>
@@ -1157,13 +1283,14 @@
   <section id="music">
     <div class="fade-in">
       <h2 class="section-title">Banda Sonora</h2>
-      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:40px;margin-top:-32px">Selecciona la mÃºsica perfecta para tu historia cinematogrÃ¡fica.</p>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:40px;margin-top:-32px">Selecciona la mÃÂºsica perfecta para tu historia cinematogrÃÂ¡fica.</p>
       <div class="music-grid" id="music-grid"></div>
     </div>
   </section>
 </div>
 
 <!-- MINI PLAYER -->
+</div>
 <div id="mini-player">
   <div class="mini-art" id="mini-art"></div>
   <div class="mini-info">
@@ -1171,9 +1298,9 @@
     <div class="mini-track-artist" id="mini-track-artist">-</div>
   </div>
   <div class="mini-controls">
-    <button class="mini-btn" id="mini-play-btn" onclick="toggleMiniPlayer()">â¶</button>
+    <button class="mini-btn" id="mini-play-btn" onclick="toggleMiniPlayer()">Ã¢ÂÂ¶</button>
   </div>
-  <button class="mini-close" onclick="closeMiniPlayer()">â</button>
+  <button class="mini-close" onclick="closeMiniPlayer()">Ã¢ÂÂ</button>
   <div class="mini-progress" id="mini-progress"></div>
 </div>
 
@@ -1182,21 +1309,21 @@
   <div class="footer-logo">FRAMELY</div>
   <div class="footer-tagline">Powered by AI Cinema</div>
   <div class="footer-social">
-    <a class="social-btn" href="#" title="Instagram">ð¸</a>
-    <a class="social-btn" href="#" title="TikTok">ðµ</a>
-    <a class="social-btn" href="#" title="YouTube">â¶</a>
-    <a class="social-btn" href="#" title="Twitter/X">â</a>
-    <a class="social-btn" href="#" title="Email">âï¸</a>
+    <a class="social-btn" href="#" title="Instagram">Ã°ÂÂÂ¸</a>
+    <a class="social-btn" href="#" title="TikTok">Ã°ÂÂÂµ</a>
+    <a class="social-btn" href="#" title="YouTube">Ã¢ÂÂ¶</a>
+    <a class="social-btn" href="#" title="Twitter/X">Ã¢ÂÂ</a>
+    <a class="social-btn" href="#" title="Email">Ã¢ÂÂÃ¯Â¸Â</a>
   </div>
-  <div class="footer-copy">Framely Â© 2025 â Powered by AI Cinema. All rights reserved.</div>
+  <div class="footer-copy">Framely ÃÂ© 2025 Ã¢ÂÂ Powered by AI Cinema. All rights reserved.</div>
 </footer>
 
 <script>
-  // âââ CONFIGURATION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ CONFIGURATION Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   const WEBHOOK_URL = 'YOUR_WEBHOOK_URL_HERE';
   const HISTORY_API_URL = 'YOUR_HISTORY_API_URL_HERE';
 
-  // âââ STATE âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ STATE Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   let uploadedImages = [];
   let selectedTier = null;
   let currentTrack = null;
@@ -1207,7 +1334,7 @@
   let miniProgressInterval = null;
   let miniProgressValue = 0;
 
-  // âââ PARTICLE CANVAS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ PARTICLE CANVAS Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   (function initParticles() {
     const canvas = document.getElementById('hero-canvas');
     const ctx = canvas.getContext('2d');
@@ -1292,7 +1419,7 @@
     animate();
   })();
 
-  // âââ LANGUAGE DETECTION ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ LANGUAGE DETECTION Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   (function detectLanguage() {
     const supported = ['es','en','fr','de','it','pt'];
     const lang = (navigator.language || 'es').toLowerCase().slice(0,2);
@@ -1301,7 +1428,7 @@
     else sel.value = 'es';
   })();
 
-  // âââ IMAGE UPLOAD ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ IMAGE UPLOAD Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   const dropZone = document.getElementById('drop-zone');
   const imgInput = document.getElementById('img-input');
   const previews = document.getElementById('image-previews');
@@ -1318,9 +1445,9 @@
   function handleFiles(fileList) {
     const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
     const remaining = 3 - uploadedImages.length;
-    if (remaining <= 0) { showToast('MÃ¡ximo 3 imÃ¡genes permitidas', 'info'); return; }
+    if (remaining <= 0) { showToast('MÃÂ¡ximo 3 imÃÂ¡genes permitidas', 'info'); return; }
     const toAdd = files.slice(0, remaining);
-    if (files.length > remaining) showToast(`Solo se aÃ±adirÃ¡n ${toAdd.length} imagen(es) (mÃ¡x. 3)`, 'info');
+    if (files.length > remaining) showToast(`Solo se aÃÂ±adirÃÂ¡n ${toAdd.length} imagen(es) (mÃÂ¡x. 3)`, 'info');
 
     toAdd.forEach(file => {
       const reader = new FileReader();
@@ -1338,7 +1465,7 @@
     uploadedImages.forEach((img, i) => {
       const thumb = document.createElement('div');
       thumb.className = 'img-thumb';
-      thumb.innerHTML = `<img src="${img.base64}" alt="ref ${i+1}"><button class="img-thumb-remove" onclick="removeImage(${i})">â</button>`;
+      thumb.innerHTML = `<img src="${img.base64}" alt="ref ${i+1}"><button class="img-thumb-remove" onclick="removeImage(${i})">Ã¢ÂÂ</button>`;
       previews.appendChild(thumb);
     });
     dropZone.style.display = uploadedImages.length >= 3 ? 'none' : 'flex';
@@ -1352,7 +1479,7 @@
     if (uploadedImages.length < 3) dropZone.style.display = '';
   }
 
-  // âââ TIER SELECTION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ TIER SELECTION Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   document.querySelectorAll('.tier-card').forEach(card => {
     card.addEventListener('click', () => {
       document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
@@ -1364,7 +1491,7 @@
   // Default: demo
   document.querySelector('.tier-card[data-tier="demo"]').click();
 
-  // âââ CHANNEL SELECTION âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ CHANNEL SELECTION Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   document.querySelectorAll('.channel-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       chip.classList.toggle('selected');
@@ -1372,7 +1499,7 @@
     });
   });
 
-  // âââ FORM VALIDATION & SUBMISSION ââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FORM VALIDATION & SUBMISSION Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   const storyForm = document.getElementById('story-form');
   const submitBtn = document.getElementById('submit-btn');
   const submitSpinner = document.getElementById('submit-spinner');
@@ -1392,10 +1519,11 @@
     const historia = document.getElementById('historia').value.trim();
     const userId = document.getElementById('user-id').value.trim();
 
-    if (!tematica) { showToast('Por favor, introduce la temÃ¡tica', 'error'); document.getElementById('tematica').focus(); return false; }
+    if (!tematica) { showToast('Por favor, introduce la temÃÂ¡tica', 'error'); document.getElementById('tematica').focus(); return false; }
     if (!personaje) { showToast('Por favor, describe tu personaje', 'error'); document.getElementById('personaje').focus(); return false; }
     if (!historia) { showToast('Por favor, cuenta tu historia', 'error'); document.getElementById('historia').focus(); return false; }
-    if (!userId) { showToast('Por favor, introduce tu identificador', 'error'); document.getElementById('user-id').focus(); return false; }
+    // user-id is auto-filled from Auth0 session
+    if (!userId && currentUser) { document.getElementById('user-id').value = currentUser.email; }
     if (!selectedTier) { showToast('Por favor, selecciona un plan', 'error'); return false; }
     return true;
   }
@@ -1428,7 +1556,7 @@
         body: JSON.stringify(payload),
       });
       if (response.ok) {
-        showToast('Â¡Historia enviada con Ã©xito! Pronto recibirÃ¡s tu video.', 'success');
+        showToast('ÃÂ¡Historia enviada con ÃÂ©xito! Pronto recibirÃÂ¡s tu video.', 'success');
         storyForm.reset();
         uploadedImages = [];
         renderPreviews();
@@ -1442,9 +1570,9 @@
     } catch (err) {
       console.error('Webhook error:', err);
       if (WEBHOOK_URL === 'YOUR_WEBHOOK_URL_HERE') {
-        showToast('â ï¸ Configura WEBHOOK_URL para enviar historias reales. (Demo: datos correctos)', 'info');
+        showToast('Ã¢ÂÂ Ã¯Â¸Â Configura WEBHOOK_URL para enviar historias reales. (Demo: datos correctos)', 'info');
       } else {
-        showToast('Error al enviar. Por favor, intÃ©ntalo de nuevo.', 'error');
+        showToast('Error al enviar. Por favor, intÃÂ©ntalo de nuevo.', 'error');
       }
     } finally {
       setLoading(false);
@@ -1455,14 +1583,14 @@
     const overlay = document.getElementById('loading-overlay');
     submitBtn.disabled = val;
     submitSpinner.style.display = val ? 'block' : 'none';
-    submitText.textContent = val ? 'Procesando...' : 'â¦ Crear Historia CinematogrÃ¡fica';
+    submitText.textContent = val ? 'Procesando...' : 'Ã¢ÂÂ¦ Crear Historia CinematogrÃÂ¡fica';
     overlay.classList.toggle('show', val);
   }
 
-  // âââ TOAST SYSTEM âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ TOAST SYSTEM Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
-    const icons = { success: 'â', error: 'â', info: 'â¦' };
+    const icons = { success: 'Ã¢ÂÂ', error: 'Ã¢ÂÂ', info: 'Ã¢ÂÂ¦' };
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${message}</span>`;
@@ -1470,21 +1598,21 @@
     setTimeout(() => { toast.remove(); }, 3600);
   }
 
-  // âââ HISTORY / MOCK DATA ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ HISTORY / MOCK DATA Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   const MOCK_STORIES = [
-    { id:1, tematica:'Ciencia FicciÃ³n', personaje:'Zara, exploradora intergalÃ¡ctica', date:'2025-01-15', gradient:'linear-gradient(135deg,#1a0a2e,#0d1b2a)', emoji:'ð' },
-    { id:2, tematica:'Romance', personaje:'Elena, pianista parisina', date:'2025-01-12', gradient:'linear-gradient(135deg,#2e0a1a,#1a0a2e)', emoji:'ð¹' },
-    { id:3, tematica:'Terror', personaje:'Marcus, detective sobrenatural', date:'2025-01-10', gradient:'linear-gradient(135deg,#0a1a0a,#0d2a13)', emoji:'ðï¸' },
-    { id:4, tematica:'Aventura', personaje:'Kai, capitÃ¡n pirata', date:'2025-01-08', gradient:'linear-gradient(135deg,#0a1a2e,#0d271a)', emoji:'â' },
-    { id:5, tematica:'FantasÃ­a', personaje:'Lyra, hechicera del tiempo', date:'2025-01-05', gradient:'linear-gradient(135deg,#1a0a2e,#2e1a0a)', emoji:'â¨' },
-    { id:6, tematica:'Thriller', personaje:'Sorin, espÃ­a en Viena', date:'2025-01-02', gradient:'linear-gradient(135deg,#0a0d2e,#0a1a2e)', emoji:'ðµï¸' },
+    { id:1, tematica:'Ciencia FicciÃÂ³n', personaje:'Zara, exploradora intergalÃÂ¡ctica', date:'2025-01-15', gradient:'linear-gradient(135deg,#1a0a2e,#0d1b2a)', emoji:'Ã°ÂÂÂ' },
+    { id:2, tematica:'Romance', personaje:'Elena, pianista parisina', date:'2025-01-12', gradient:'linear-gradient(135deg,#2e0a1a,#1a0a2e)', emoji:'Ã°ÂÂÂ¹' },
+    { id:3, tematica:'Terror', personaje:'Marcus, detective sobrenatural', date:'2025-01-10', gradient:'linear-gradient(135deg,#0a1a0a,#0d2a13)', emoji:'Ã°ÂÂÂÃ¯Â¸Â' },
+    { id:4, tematica:'Aventura', personaje:'Kai, capitÃÂ¡n pirata', date:'2025-01-08', gradient:'linear-gradient(135deg,#0a1a2e,#0d271a)', emoji:'Ã¢ÂÂ' },
+    { id:5, tematica:'FantasÃÂ­a', personaje:'Lyra, hechicera del tiempo', date:'2025-01-05', gradient:'linear-gradient(135deg,#1a0a2e,#2e1a0a)', emoji:'Ã¢ÂÂ¨' },
+    { id:6, tematica:'Thriller', personaje:'Sorin, espÃÂ­a en Viena', date:'2025-01-02', gradient:'linear-gradient(135deg,#0a0d2e,#0a1a2e)', emoji:'Ã°ÂÂÂµÃ¯Â¸Â' },
   ];
 
   function renderHistoryCards(data) {
     const grid = document.getElementById('history-grid');
     grid.innerHTML = '';
     if (!data || data.length === 0) {
-      grid.innerHTML = `<div class="history-empty"><div style="font-size:3rem">ð½ï¸</div><p>No se encontraron historias.</p></div>`;
+      grid.innerHTML = `<div class="history-empty"><div style="font-size:3rem">Ã°ÂÂÂ½Ã¯Â¸Â</div><p>No se encontraron historias.</p></div>`;
       return;
     }
     data.forEach(story => {
@@ -1536,16 +1664,16 @@
   // Initial history render
   renderHistoryCards(MOCK_STORIES);
 
-  // âââ MUSIC DATA & PLAYER âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ MUSIC DATA & PLAYER Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   const TRACKS = [
-    { id:1, name:'Celestial Overture', artist:'Framely Orchestra', duration:'3:42', emoji:'ð»', gradient:'linear-gradient(135deg,#1a0a2e,#2e1a0a)', freq:220, waveType:'sine' },
-    { id:2, name:'Noir Shadows', artist:'Dark Cinema Ensemble', duration:'4:15', emoji:'ð·', gradient:'linear-gradient(135deg,#0a0a2e,#1a0a0a)', freq:196, waveType:'triangle' },
-    { id:3, name:'Golden Horizon', artist:'Epic Sound Studio', duration:'5:02', emoji:'ð¹', gradient:'linear-gradient(135deg,#2e1a0a,#0a1a2e)', freq:261, waveType:'sine' },
-    { id:4, name:'Whispers of Time', artist:'Framely Strings', duration:'3:28', emoji:'ð¶', gradient:'linear-gradient(135deg,#0a2e1a,#1a0a2e)', freq:246, waveType:'triangle' },
-    { id:5, name:'Midnight Revelation', artist:'Cinematic Pulse', duration:'4:58', emoji:'ð¥', gradient:'linear-gradient(135deg,#2e0a0a,#0a0a2e)', freq:174, waveType:'sawtooth' },
-    { id:6, name:'Aurora Infinity', artist:'Sky & Sound', duration:'6:11', emoji:'ð', gradient:'linear-gradient(135deg,#0a1a2e,#2e0a2e)', freq:293, waveType:'sine' },
-    { id:7, name:'Eternal Frames', artist:'Framely Composers', duration:'3:55', emoji:'ðº', gradient:'linear-gradient(135deg,#1a2e0a,#0a0a2e)', freq:329, waveType:'triangle' },
-    { id:8, name:'The Final Act', artist:'Grand Cinema Orchestra', duration:'7:22', emoji:'ðµ', gradient:'linear-gradient(135deg,#2e2e0a,#0a2e2e)', freq:164, waveType:'sine' },
+    { id:1, name:'Celestial Overture', artist:'Framely Orchestra', duration:'3:42', emoji:'Ã°ÂÂÂ»', gradient:'linear-gradient(135deg,#1a0a2e,#2e1a0a)', freq:220, waveType:'sine' },
+    { id:2, name:'Noir Shadows', artist:'Dark Cinema Ensemble', duration:'4:15', emoji:'Ã°ÂÂÂ·', gradient:'linear-gradient(135deg,#0a0a2e,#1a0a0a)', freq:196, waveType:'triangle' },
+    { id:3, name:'Golden Horizon', artist:'Epic Sound Studio', duration:'5:02', emoji:'Ã°ÂÂÂ¹', gradient:'linear-gradient(135deg,#2e1a0a,#0a1a2e)', freq:261, waveType:'sine' },
+    { id:4, name:'Whispers of Time', artist:'Framely Strings', duration:'3:28', emoji:'Ã°ÂÂÂ¶', gradient:'linear-gradient(135deg,#0a2e1a,#1a0a2e)', freq:246, waveType:'triangle' },
+    { id:5, name:'Midnight Revelation', artist:'Cinematic Pulse', duration:'4:58', emoji:'Ã°ÂÂ¥Â', gradient:'linear-gradient(135deg,#2e0a0a,#0a0a2e)', freq:174, waveType:'sawtooth' },
+    { id:6, name:'Aurora Infinity', artist:'Sky & Sound', duration:'6:11', emoji:'Ã°ÂÂÂ', gradient:'linear-gradient(135deg,#0a1a2e,#2e0a2e)', freq:293, waveType:'sine' },
+    { id:7, name:'Eternal Frames', artist:'Framely Composers', duration:'3:55', emoji:'Ã°ÂÂÂº', gradient:'linear-gradient(135deg,#1a2e0a,#0a0a2e)', freq:329, waveType:'triangle' },
+    { id:8, name:'The Final Act', artist:'Grand Cinema Orchestra', duration:'7:22', emoji:'Ã°ÂÂÂµ', gradient:'linear-gradient(135deg,#2e2e0a,#0a2e2e)', freq:164, waveType:'sine' },
   ];
 
   const selectedTracks = new Set();
@@ -1573,9 +1701,9 @@
         </div>
         <div class="track-waveform">${waveHTML}</div>
         <div class="track-actions">
-          <button class="btn-play" id="play-btn-${track.id}" onclick="toggleTrack(${track.id})">â¶</button>
+          <button class="btn-play" id="play-btn-${track.id}" onclick="toggleTrack(${track.id})">Ã¢ÂÂ¶</button>
           <button class="btn-select" id="select-btn-${track.id}" onclick="selectTrack(${track.id})">
-            ${selectedTracks.has(track.id) ? 'â Seleccionada' : 'Seleccionar'}
+            ${selectedTracks.has(track.id) ? 'Ã¢ÂÂ Seleccionada' : 'Seleccionar'}
           </button>
         </div>
       `;
@@ -1664,7 +1792,7 @@
       const active = currentTrack && currentTrack.id === t.id && isPlaying;
       card.classList.toggle('playing', active);
       playBtn.classList.toggle('playing', active);
-      playBtn.textContent = active ? 'â¸' : 'â¶';
+      playBtn.textContent = active ? 'Ã¢ÂÂ¸' : 'Ã¢ÂÂ¶';
     });
   }
 
@@ -1677,17 +1805,17 @@
     const btn = document.getElementById(`select-btn-${id}`);
     if (btn) {
       btn.classList.toggle('selected', selectedTracks.has(id));
-      btn.textContent = selectedTracks.has(id) ? 'â Seleccionada' : 'Seleccionar';
+      btn.textContent = selectedTracks.has(id) ? 'Ã¢ÂÂ Seleccionada' : 'Seleccionar';
     }
   }
 
-  // âââ MINI PLAYER âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ MINI PLAYER Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   function showMiniPlayer(track) {
     document.getElementById('mini-art').textContent = track.emoji;
     document.getElementById('mini-art').style.background = track.gradient;
     document.getElementById('mini-track-name').textContent = track.name;
     document.getElementById('mini-track-artist').textContent = track.artist;
-    document.getElementById('mini-play-btn').textContent = 'â¸';
+    document.getElementById('mini-play-btn').textContent = 'Ã¢ÂÂ¸';
     document.getElementById('mini-player').classList.add('visible');
   }
 
@@ -1703,7 +1831,7 @@
     if (!currentTrack) return;
     if (isPlaying) {
       stopAudio();
-      document.getElementById('mini-play-btn').textContent = 'â¶';
+      document.getElementById('mini-play-btn').textContent = 'Ã¢ÂÂ¶';
     } else {
       playAudio(currentTrack);
       updateMusicUI();
@@ -1713,7 +1841,7 @@
 
   function updateMiniPlayerBtn() {
     const btn = document.getElementById('mini-play-btn');
-    if (btn) btn.textContent = isPlaying ? 'â¸' : 'â¶';
+    if (btn) btn.textContent = isPlaying ? 'Ã¢ÂÂ¸' : 'Ã¢ÂÂ¶';
   }
 
   function startMiniProgress() {
@@ -1733,7 +1861,7 @@
 
   renderMusicGrid();
 
-  // âââ NAVIGATION ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ NAVIGATION Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   let mobileNavOpen = false;
   function toggleMobileNav() {
     mobileNavOpen = !mobileNavOpen;
@@ -1757,7 +1885,7 @@
     });
   });
 
-  // âââ INTERSECTION OBSERVER (FADE IN) âââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ INTERSECTION OBSERVER (FADE IN) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   const fadeEls = document.querySelectorAll('.fade-in');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -1769,7 +1897,7 @@
   }, { threshold: 0.1 });
   fadeEls.forEach(el => observer.observe(el));
 
-  // âââ SCROLL: NAVBAR BACKGROUND âââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ SCROLL: NAVBAR BACKGROUND Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
     if (window.scrollY > 60) {
@@ -1779,11 +1907,141 @@
     }
   });
 
-  // âââ DRAG-DROP ZONE INIT âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ DRAG-DROP ZONE INIT Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   dropZone.style.display = 'block';
   // Fix for file input click-through
   dropZone.querySelector('input[type="file"]').addEventListener('click', e => e.stopPropagation());
   dropZone.addEventListener('click', () => dropZone.querySelector('input[type="file"]').click());
+
+
+  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // AUTH0 INTEGRATION
+  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  const AUTH0_DOMAIN    = 'dev-skq1hetidxnkfrc4.us.auth0.com';
+  const AUTH0_CLIENT_ID = 'uHFqEzGZccBIsXFeKodtGEnEGBLIkWos';
+  const AUTH0_REDIRECT  = 'https://elyoenay1990.github.io/framely';
+
+  let auth0Client = null;
+  let currentUser = null;
+
+  // Initialize Auth0 client and handle redirect callback
+  async function initAuth0() {
+    auth0Client = await auth0.createAuth0Client({
+      domain:   AUTH0_DOMAIN,
+      clientId: AUTH0_CLIENT_ID,
+      authorizationParams: {
+        redirect_uri: AUTH0_REDIRECT
+      },
+      cacheLocation: 'localstorage'
+    });
+
+    // Handle redirect callback after login
+    if (window.location.search.includes('code=') || window.location.search.includes('error=')) {
+      try {
+        await auth0Client.handleRedirectCallback();
+      } catch(e) {
+        console.warn('Auth0 redirect callback error:', e);
+      }
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Check auth state
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    if (isAuthenticated) {
+      const user = await auth0Client.getUser();
+      setLoggedIn(user);
+    } else {
+      setLoggedOut();
+    }
+  }
+
+  function setLoggedIn(user) {
+    currentUser = user;
+    const email = user.email || '';
+    const name  = user.name  || email;
+    const pic   = user.picture || '';
+
+    // Update navbar
+    document.getElementById('nav-logged-out').style.display = 'none';
+    const loggedInEl = document.getElementById('nav-logged-in');
+    loggedInEl.style.display = 'flex';
+    document.getElementById('nav-email').textContent = email;
+
+    // Avatar: photo or initials
+    const avatarEl = document.getElementById('nav-avatar');
+    if (pic) {
+      avatarEl.innerHTML = '<img src="' + pic + '" alt="avatar">';
+    } else {
+      avatarEl.textContent = (name[0] || '?').toUpperCase();
+    }
+
+    // Show app, hide gate
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('app-sections').style.display = 'block';
+
+
+    // Sync mobile nav
+    document.getElementById('mobile-auth-logged-out').style.display = 'none';
+    const mobileLoggedIn = document.getElementById('mobile-auth-logged-in');
+    mobileLoggedIn.style.display = 'flex';
+    document.getElementById('mobile-user-email').textContent = email;
+
+    // Set hidden user_identifier field
+    const userIdInput = document.getElementById('user-id');
+    if (userIdInput) userIdInput.value = email;
+
+    // Auto-load history for this user
+    document.getElementById('history-search-input').value = email;
+    searchHistory();
+  }
+
+  function setLoggedOut() {
+    currentUser = null;
+
+    // Update navbar
+    document.getElementById('nav-logged-out').style.display = 'flex';
+    document.getElementById('nav-logged-in').style.display = 'none';
+
+
+    // Sync mobile nav
+    document.getElementById('mobile-auth-logged-out').style.display = 'flex';
+    document.getElementById('mobile-auth-logged-in').style.display = 'none';
+
+    // Show gate, hide app sections
+    document.getElementById('auth-gate').style.display = 'flex';
+    document.getElementById('app-sections').style.display = 'none';
+  }
+
+  function auth0Login() {
+    if (!auth0Client) return;
+    auth0Client.loginWithRedirect({
+      authorizationParams: {
+        redirect_uri: AUTH0_REDIRECT,
+        connection: undefined  // shows all connections (Google + email)
+      }
+    });
+  }
+
+  function auth0Register() {
+    if (!auth0Client) return;
+    auth0Client.loginWithRedirect({
+      authorizationParams: {
+        redirect_uri: AUTH0_REDIRECT,
+        screen_hint: 'signup'
+      }
+    });
+  }
+
+  function auth0Logout() {
+    if (!auth0Client) return;
+    auth0Client.logout({
+      logoutParams: { returnTo: AUTH0_REDIRECT }
+    });
+  }
+
+  // Kick off Auth0 init
+  initAuth0().catch(console.error);
 
 </script>
 </body>
